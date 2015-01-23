@@ -2,9 +2,6 @@
 
 BASE_ITEM=.base
 
-BASE_PATH=$PWD
-BACK_BASE=${PWD%/*}
-
 add_paths() {
 	for CUR_PATH in "${MODE_PATH[@]}"; do
 		local ADD_PATH=$BASE_PATH/$CUR_PATH
@@ -20,7 +17,7 @@ add_path() {
 mode_chk() {
 	
 	# Already in a mode
-	[ ! -z $CURRENT_SHELL_MODE ] && return
+	[ ! -z "$CURRENT_SHELL_MODE" ] && is_exit_mode && return
 	
 	# No new mode is required
         [ ! -e "./$BASE_ITEM" ] && return
@@ -28,15 +25,18 @@ mode_chk() {
 	# Load mode variables
 	source $BASE_ITEM
 	
-	if [ $CURRENT_SHELL_MODE != $SHELL_MODE ]; then
+	#if [ "$CURRENT_SHELL_MODE" != "$SHELL_MODE" ]; then
+		
 		export CURRENT_SHELL_MODE=$SHELL_MODE
 		export OLD_PS1=$PS1
 		
+		export BASE_PATH=$PWD
+		export BACK_BASE=${PWD%/*}
+
+		
 		add_paths 
 		export PS1='\u@\h:$(path_base)-\e[1;34m$(git_repo_name)\e[m\$ '
-	else
-		export PS1=$OLD_PS1
-	fi
+	#fi
 }
 
 find_base() {
@@ -49,6 +49,14 @@ find_base() {
         done
 
         [ -z "$CUR_BASE" ] && return 0
+}
+
+is_exit_mode() {
+	local CURR=${PWD#$BASE_PATH}
+	if [ "$PWD" == "$BACK_BASE" ]; then
+		CURRENT_SHELL_MODE=""
+		export PS1=$OLD_PS1
+	fi
 }
 
 path_base() {
