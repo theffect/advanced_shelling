@@ -24,6 +24,8 @@ repo_name() {
 		cd ..
 	done
 	
+	[ -z "$CUR_BASE" ] && return 0
+	
 	local TMP=$(grep url $CUR_BASE/$DEV_BASE_ITEM/config)
 	echo ${TMP##*/}
 	#${CUR_BASE##*/}
