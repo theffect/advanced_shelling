@@ -10,7 +10,7 @@ is_git_repo() {
 
 git_log() {
 	#is_git_repo;  (( $? )) && return 1
-	git log --graph --decorate --all --pretty="format:%C(3)%h %C(2)%an %Creset%s %d"
+	git log --graph --decorate --all --pretty="format:%C(3)%h %C(2)%an %Creset%s %C(auto)%d"
 }
 
 git_log_alt() {
