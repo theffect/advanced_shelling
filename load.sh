@@ -70,13 +70,4 @@ mode_exit() {
 	export PATH=$OLD_PATH
 }
 
-path_base() {
-	local CURR=${PWD#$BASE_PATH}
-	if [ "$PWD" == "$BACK_BASE" ] ; then
-		echo $PWD
-	else
-		echo -en "\e[1;33m${CURR#/}\e[m"
-	fi
-}
-
 export PROMPT_COMMAND="mode_chk"
