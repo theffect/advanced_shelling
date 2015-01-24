@@ -32,7 +32,8 @@ git_current_branch() {
 }
 
 git_unpushed_commits_number() {
-	git rev-list @{upstream}..HEAD --count
+	NUMBER=$(git rev-list @{upstream}..HEAD --count)
+	[ $NUMBER -ne 0 ] && echo $NUMBER
 }
 
 git_is_uncommited_changes() {
