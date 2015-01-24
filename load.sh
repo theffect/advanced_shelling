@@ -29,6 +29,7 @@ mode_chk() {
 		
 		export CURRENT_SHELL_MODE=$SHELL_MODE
 		export OLD_PS1=$PS1
+		export OLD_PATH=$PATH
 		
 		export BASE_PATH=$PWD
 		export BACK_BASE=${PWD%/*}
@@ -54,9 +55,18 @@ find_base() {
 is_exit_mode() {
 	local CURR=${PWD#$BASE_PATH}
 	if [ "$PWD" == "$BACK_BASE" ]; then
-		CURRENT_SHELL_MODE=""
-		export PS1=$OLD_PS1
+		mode_exit
 	fi
+}
+
+mode_exit() {
+	CURRENT_SHELL_MODE=""
+
+	echo "Restoring prompt"
+	export PS1=$OLD_PS1
+
+	echo "Removing paths"
+	export PATH=$OLD_PATH
 }
 
 path_base() {
