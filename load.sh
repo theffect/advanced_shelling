@@ -1,7 +1,6 @@
 
 
-BASE_ITEM=base
-
+source config.inc
 
 Red="\[\e[1;31m\]"
 Yellow="\[\e[1;33m\]"
@@ -30,7 +29,7 @@ mode_chk() {
 		export BASE_PATH=$PWD
 		export BACK_BASE=${PWD%/*}
 		
-		source bash_assist_git
+		source $ASSISTANTS_DIR/bash_assist_git
 
 		local GIT_REPO_NAME="$Blue$(git_repo_name)$COff"
 		add_paths
