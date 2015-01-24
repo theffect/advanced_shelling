@@ -46,8 +46,16 @@ git_is_uncommited_changes() {
 
 git_repo_name() {
 	local REMOTES=$(git remote -v)
-	REMOTE_URL=${REMOTES%%(fetch)*}
-	echo ${REMOTE_URL##*/}
+	#readarray -t REMOTES <<< "$REMOTES"
+	for REMOTE in "$REMOTES"; do
+		[[ "$REMOTE" =~ "(fetch)" ]] && local REMOTE_URL=${REMOTE%% (fetch)*}
+	done
+
+	# Cleaning
+	local REMOTE_REPO_NAME=${REMOTE_URL##*/}
+	REMOTE_REPO_NAME=${REMOTE_REPO_NAME%.git}
+
+	echo $REMOTE_REPO_NAME
 }
 
 alias gil='git_log'
@@ -55,5 +63,4 @@ alias gib='git_branch'
 alias gis='git_status'
 alias gia='git add'
 alias gic='git commit'
-
 
