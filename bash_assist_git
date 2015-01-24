@@ -30,8 +30,14 @@ git_current_branch() {
 	git rev-parse --abbrev-ref HEAD
 }
 
+#git_repo_name() {
+#	git name-rev --name-only HEAD
+#}
+
 git_repo_name() {
-	git name-rev --name-only HEAD
+	local REMOTES=$(git remote -v)
+	REMOTE_URL=${REMOTES%%(fetch)*}
+	echo ${REMOTE_URL##*/}
 }
 
 alias gil='git_log'
