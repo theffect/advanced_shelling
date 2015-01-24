@@ -1,6 +1,6 @@
 
 
-BASE_ITEM=.base
+BASE_ITEM=base
 
 add_paths() {
 	for CUR_PATH in "${MODE_PATH[@]}"; do
