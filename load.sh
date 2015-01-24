@@ -34,10 +34,10 @@ mode_chk() {
 		export BASE_PATH=$PWD
 		export BACK_BASE=${PWD%/*}
 
-		local GIT_REPO_NAME=`echo -ne "\e[1;34m$(git_repo_name)\e[m"`
+		local GIT_REPO_NAME=`echo -ne "\[\e[1;34m\]$(git_repo_name)\[\e[m\]"`
 		add_paths
 		
-		export PS1='\u@\h:$(path_base)-'$GIT_REPO_NAME'-$(git_unpushed_commits_number)$(git_is_uncommited_changes)\$ '
+		export PS1='\u@\h:\[\e[1;33m\]${PWD#$BASE_PATH}\[\e[m\]-'$GIT_REPO_NAME'-$(git_unpushed_commits_number)$(git_is_uncommited_changes)\$ '
 	#fi
 }
 
