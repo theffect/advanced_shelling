@@ -9,17 +9,6 @@ Blue="\[\e[1;34m\]"
 Pink="\[\e[1;35m\]"
 COff="\[\e[m\]"
 
-add_paths() {
-	for CUR_PATH in "${MODE_PATH[@]}"; do
-		local ADD_PATH=$BASE_PATH/$CUR_PATH
-		add_path "$ADD_PATH"
-	done
-}
-
-add_path() {	
-	local ADD_PATH=$1
-	[[ ! $PATH =~ $ADD_PATH ]] && echo Adding $ADD_PATH to PATH && export PATH=$ADD_PATH:$PATH
-}
 
 mode_chk() {
 	
@@ -46,6 +35,18 @@ mode_chk() {
 		
 		export PS1='\u@\h:'$Yellow'${PWD#$BASE_PATH}'$COff'-'$GIT_REPO_NAME'-'$Red'$(git_unpushed_commits_number)$(git_is_uncommited_changes)'$COff'\$ '
 	#fi
+}
+
+add_path() {	
+	local ADD_PATH=$1
+	[[ ! $PATH =~ $ADD_PATH ]] && echo Adding $ADD_PATH to PATH && export PATH=$ADD_PATH:$PATH
+}
+
+add_paths() {
+	for CUR_PATH in "${MODE_PATH[@]}"; do
+		local ADD_PATH=$BASE_PATH/$CUR_PATH
+		add_path "$ADD_PATH"
+	done
 }
 
 find_base() {
