@@ -29,6 +29,8 @@ mode_chk() {
 		
 		export BASE_PATH=$PWD
 		export BACK_BASE=${PWD%/*}
+		
+		source bash_assist_git
 
 		local GIT_REPO_NAME="$Blue$(git_repo_name)$COff"
 		add_paths
