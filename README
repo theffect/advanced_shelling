@@ -1,0 +1,4 @@
+
+Once you 'source load.sh' you start using this advanced shelling goodies.
+
+Put the 'base' file where you want to change modes automatically (you can hide it as '.base' and change the config in the load.sh).
