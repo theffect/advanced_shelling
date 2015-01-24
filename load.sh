@@ -2,6 +2,13 @@
 
 BASE_ITEM=base
 
+
+Red="\[\e[1;31m\]"
+Yellow="\[\e[1;33m\]"
+Blue="\[\e[1;34m\]"
+Pink="\[\e[1;35m\]"
+COff="\[\e[m\]"
+
 add_paths() {
 	for CUR_PATH in "${MODE_PATH[@]}"; do
 		local ADD_PATH=$BASE_PATH/$CUR_PATH
@@ -34,10 +41,10 @@ mode_chk() {
 		export BASE_PATH=$PWD
 		export BACK_BASE=${PWD%/*}
 
-		local GIT_REPO_NAME=`echo -ne "\[\e[1;34m\]$(git_repo_name)\[\e[m\]"`
+		local GIT_REPO_NAME="$Blue$(git_repo_name)$COff"
 		add_paths
 		
-		export PS1='\u@\h:\[\e[1;33m\]${PWD#$BASE_PATH}\[\e[m\]-'$GIT_REPO_NAME'-$(git_unpushed_commits_number)$(git_is_uncommited_changes)\$ '
+		export PS1='\u@\h:'$Yellow'${PWD#$BASE_PATH}'$COff'-'$GIT_REPO_NAME'-'$Red'$(git_unpushed_commits_number)$(git_is_uncommited_changes)'$COff'\$ '
 	#fi
 }
 
