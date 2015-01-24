@@ -1,3 +1,4 @@
+
 [ -z "$(which git)" ] && return 1
 
 # If git repo return 0 else 1
@@ -9,7 +10,7 @@ is_git_repo() {
 
 git_log() {
 	#is_git_repo;  (( $? )) && return 1
-	git log --graph --decorate --all --pretty="format:%C(3)%H %C(2)%an %Creset%s %d"
+	git log --graph --decorate --all --pretty="format:%C(3)%h %C(2)%an %Creset%s %d"
 }
 
 git_log_alt() {
