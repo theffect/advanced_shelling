@@ -36,7 +36,7 @@ mode_chk() {
 
 		
 		add_paths 
-		export PS1='\u@\h:$(path_base)-\e[1;34m$(git_repo_name)\e[m-$(git_unpushed_commits_number)\$ '
+		export PS1='\u@\h:$(path_base)-\e[1;34m$(git_repo_name)\e[m-$(git_unpushed_commits_number)$(git_is_uncommited_changes)\$ '
 	#fi
 }
 

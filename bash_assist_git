@@ -35,6 +35,10 @@ git_unpushed_commits_number() {
 	git rev-list @{upstream}..HEAD --count
 }
 
+git_is_uncommited_changes() {
+	[ ! -z "$(git status -s)" ] && echo M
+}
+
 #git_repo_name() {
 #	git name-rev --name-only HEAD
 #}
