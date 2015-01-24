@@ -15,7 +15,7 @@ mode_chk() {
 	[ ! -z "$CURRENT_SHELL_MODE" ] && is_exit_mode && return
 	
 	# No new mode is required
-        [ ! -e "./$BASE_ITEM" ] && return
+	[ ! -e "./$BASE_ITEM" ] && return
 	
 	# Load mode variables
 	source $BASE_ITEM
@@ -27,14 +27,14 @@ mode_chk() {
 		export OLD_PATH=$PATH
 		
 		export BASE_PATH=$PWD
-		export BACK_BASE=${PWD%/*}
+		export BACK_PATH=${PWD%/*}
 		
 		source $ASSISTANTS_DIR/bash_assist_git
 
 		local GIT_REPO_NAME="$Blue$(git_repo_name)$COff"
 		add_paths
 		
-		export PS1='\u@\h:'$Yellow'${PWD#$BASE_PATH}'$COff'-'$GIT_REPO_NAME'-'$Red'$(git_unpushed_commits_number)$(git_is_uncommited_changes)'$COff'\$ '
+		export PS1='\u@\h:'$Yellow'${PWD#$BACK_PATH}'$COff'-'$GIT_REPO_NAME'-'$Red'$(git_unpushed_commits_number)$(git_is_uncommited_changes)'$COff'\$ '
 	#fi
 }
 
@@ -51,21 +51,42 @@ add_paths() {
 }
 
 find_base() {
-        local CUR_BASE=$PWD
-        local CONT=1
+	local CUR_BASE=$PWD
+	local CONT=1
 
-        while [[ ! -z "$CUR_BASE" && ! -e $CUR_BASE/$DEV_BASE_ITEM ]]; do
-                local CUR_BASE=${PWD%/*}
-                cd ..
-        done
+	while [[ ! -z "$CUR_BASE" && ! -e $CUR_BASE/$DEV_BASE_ITEM ]]; do
+		local CUR_BASE=${PWD%/*}
+		cd ..
+	done
 
-        [ -z "$CUR_BASE" ] && return 0
+	[ -z "$CUR_BASE" ] && return 0
+}
+
+compare_path() {
+	local CUR_PWD=$PWD/
+	local CUR_BASE=$BASE_PATH/
+
+	while [ ! -z "$CUR_PWD" -a ! -z "$CUR_BASE" ]; do
+			CUR_PWD=${CUR_PWD#*/}
+			CUR_BASE=${CUR_BASE#*/}
+			#echo -e "PWD=$CUR_PWD\nBASE=$CUR_BASE"
+	done
+
+	# Inside = True
+	[ -z "$CUR_BASE" ] && return 0
+	
+	# Outside = False
+	return 1
+}
+
+is_in_mode() {
+	compare_path
+	return $?
 }
 
 is_exit_mode() {
-	local CURR=${PWD%$BASE_PATH}
-	[ ! -z "$CURR" ] && mode_exit
-	return 0
+	is_in_mode && return 0
+	mode_exit && return 1
 }
 
 mode_exit() {
@@ -76,6 +97,8 @@ mode_exit() {
 
 	echo "Removing paths"
 	export PATH=$OLD_PATH
+
+	return 0
 }
 
 export PROMPT_COMMAND="mode_chk"
