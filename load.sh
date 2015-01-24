@@ -61,10 +61,9 @@ find_base() {
 }
 
 is_exit_mode() {
-	local CURR=${PWD#$BASE_PATH}
-	if [ "$PWD" == "$BACK_BASE" ]; then
-		mode_exit
-	fi
+	local CURR=${PWD%$BASE_PATH}
+	[ ! -z "$CURR" ] && mode_exit
+	return 0
 }
 
 mode_exit() {
