@@ -13,8 +13,14 @@ PS1_END='$ '
 mode_chk() {
 	
 	# Already in a mode
-	[ ! -z "$CURRENT_SHELL_MODE" ] && is_exit_mode 
-	if [ $? -eq 0 ]; then
+	if [ ! -z "$CURRENT_SHELL_MODE" ]; then
+		is_in_mode
+		if [ $? -eq 0 ]; then
+			mode_git_PS1
+		else
+			mode_exit
+		fi
+		
 		return
 	fi
 	
@@ -31,19 +37,22 @@ mode_chk() {
 	export BASE_PATH=$PWD
 	export BACK_PATH=${PWD%/*}
 	
+	add_paths
+	
 	export PS1='\u@\h:'$Yellow'${PWD#$BACK_PATH}'$COff$PS1_END
+	export BASE_PS1=$PS1
 	
 	mode_git
+	mode_git_PS1
 }
 
 mode_git() {
 	source $ASSISTANTS_DIR/bash_assist_git 
-	
+}
+
+mode_git_PS1() {
 	local GIT_REPO_NAME="$Blue$(git_repo_name)$COff"
-	
-	add_paths
-	
-	PS1=${PS1%$PS1_END}'-'$GIT_REPO_NAME'-'$Red'$(git_unpushed_commits_number)$(git_is_uncommited_changes)'$COff$PS1_END
+	PS1=${BASE_PS1%$PS1_END}'-'$GIT_REPO_NAME'-'$Red'$(git_unpushed_commits_number)$(git_is_uncommited_changes)'$COff$PS1_END
 }
 
 add_path() {	
@@ -92,13 +101,8 @@ is_in_mode() {
 	return $?
 }
 
-is_exit_mode() {
-	is_in_mode && return 0
-	mode_exit && return 1
-}
-
 mode_exit() {
-	unset CURRENT_SHELL_MODE
+	CURRENT_SHELL_MODE=""
 
 	echo "Restoring prompt"
 	export PS1=$OLD_PS1
