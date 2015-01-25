@@ -8,11 +8,15 @@ Blue="\[\e[1;34m\]"
 Pink="\[\e[1;35m\]"
 COff="\[\e[m\]"
 
+PS1_END='$ '
 
 mode_chk() {
 	
 	# Already in a mode
-	[ ! -z "$CURRENT_SHELL_MODE" ] && is_exit_mode && return
+	[ ! -z "$CURRENT_SHELL_MODE" ] && is_exit_mode 
+	if [ $? -eq 0 ]; then
+		return
+	fi
 	
 	# No new mode is required
 	[ ! -e "./$BASE_ITEM" ] && return
@@ -20,22 +24,26 @@ mode_chk() {
 	# Load mode variables
 	source $BASE_ITEM
 	
-	#if [ "$CURRENT_SHELL_MODE" != "$SHELL_MODE" ]; then
-		
-		export CURRENT_SHELL_MODE=$SHELL_MODE
-		export OLD_PS1=$PS1
-		export OLD_PATH=$PATH
-		
-		export BASE_PATH=$PWD
-		export BACK_PATH=${PWD%/*}
-		
-		source $ASSISTANTS_DIR/bash_assist_git
+	export CURRENT_SHELL_MODE=$SHELL_MODE
+	export OLD_PS1=$PS1
+	export OLD_PATH=$PATH
+	
+	export BASE_PATH=$PWD
+	export BACK_PATH=${PWD%/*}
+	
+	export PS1='\u@\h:'$Yellow'${PWD#$BACK_PATH}'$COff$PS1_END
+	
+	mode_git
+}
 
-		local GIT_REPO_NAME="$Blue$(git_repo_name)$COff"
-		add_paths
-		
-		export PS1='\u@\h:'$Yellow'${PWD#$BACK_PATH}'$COff'-'$GIT_REPO_NAME'-'$Red'$(git_unpushed_commits_number)$(git_is_uncommited_changes)'$COff'\$ '
-	#fi
+mode_git() {
+	source $ASSISTANTS_DIR/bash_assist_git 
+	
+	local GIT_REPO_NAME="$Blue$(git_repo_name)$COff"
+	
+	add_paths
+	
+	PS1=${PS1%$PS1_END}'-'$GIT_REPO_NAME'-'$Red'$(git_unpushed_commits_number)$(git_is_uncommited_changes)'$COff$PS1_END
 }
 
 add_path() {	
@@ -90,14 +98,19 @@ is_exit_mode() {
 }
 
 mode_exit() {
-	CURRENT_SHELL_MODE=""
+	unset CURRENT_SHELL_MODE
 
 	echo "Restoring prompt"
 	export PS1=$OLD_PS1
+	unset OLD_PS1
 
 	echo "Removing paths"
 	export PATH=$OLD_PATH
-
+	unset OLD_PATH
+	
+	unset BASE_PATH
+	unset BACK_PATH
+	
 	return 0
 }
 
