@@ -2,6 +2,9 @@
 
 source config.inc
 
+#BASE_ITEM
+[ ! -e "$ASSISTANTS_DIR" ] && echo -e "Asistants scripts directory doesn't exist in path given.\n""Please check ASSISTANTS_DIR value." && exit
+
 Red="\[\e[1;31m\]"
 Yellow="\[\e[1;33m\]"
 Blue="\[\e[1;34m\]"
