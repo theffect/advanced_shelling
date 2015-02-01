@@ -32,17 +32,17 @@ mode_chk() {
 	fi
 	
 	# No new mode is required
-	[ ! -e "./$BASE_ITEM" ] && return
+	find_base || return
 	
 	# Load mode variables
-	source $BASE_ITEM
+	source $BASE_ITEM_PATH
 	
 	export CURRENT_SHELL_MODE=$SHELL_MODE
 	export OLD_PS1=$PS1
 	export OLD_PATH=$PATH
 	
-	export BASE_PATH=$PWD
-	export BACK_PATH=${PWD%/*}
+	export BASE_PATH=${BASE_ITEM_PATH%/*}
+	export BACK_PATH=${BASE_PATH%/*}
 	
 	add_paths
 	
@@ -83,12 +83,13 @@ find_base() {
 	local CUR_BASE=$PWD
 	local CONT=1
 
-	while [[ ! -z "$CUR_BASE" && ! -e $CUR_BASE/$DEV_BASE_ITEM ]]; do
-		local CUR_BASE=${PWD%/*}
-		cd ..
+	while [[ ! -z "$CUR_BASE" && ! -e $CUR_BASE/$BASE_ITEM ]]; do
+		local CUR_BASE=${CUR_BASE%/*}
 	done
 
-	[ -z "$CUR_BASE" ] && return 0
+	[ -z "$CUR_BASE" ] && return 1
+	BASE_ITEM_PATH=$CUR_BASE/$BASE_ITEM
+	return 0
 }
 
 compare_path() {
