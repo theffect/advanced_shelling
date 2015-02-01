@@ -19,7 +19,11 @@ mode_chk() {
 	if [ ! -z "$CURRENT_SHELL_MODE" ]; then
 		is_in_mode
 		if [ $? -eq 0 ]; then
-			mode_git_PS1
+			if [ -e $MODE_ITEM ] ; then
+				mode_git_PS1
+			else
+				umode_git_PS1
+			fi
 		else
 			mode_exit
 		fi
@@ -44,18 +48,23 @@ mode_chk() {
 	
 	export PS1='\u@\h:'$Yellow'${PWD#$BACK_PATH}'$COff$PS1_END
 	export BASE_PS1=$PS1
-	
-	mode_git
-	mode_git_PS1
-}
 
-mode_git() {
-	source $ASSISTANTS_DIR/bash_assist_git 
+	load_assitant git
+	[ -e $MODE_ITEM ] && mode_git_PS1
+}
+	
+load_assitant() {
+	[ ! -e $ASSISTANTS_DIR/bash_assist_$1 ] && return 1
+	source $ASSISTANTS_DIR/bash_assist_$1
 }
 
 mode_git_PS1() {
 	local GIT_REPO_NAME="$Blue$(git_repo_name)$COff"
 	PS1=${BASE_PS1%$PS1_END}'-'$GIT_REPO_NAME'-'$Red'$(git_unpushed_commits_number)$(git_is_uncommited_changes)'$COff$PS1_END
+}
+
+umode_git_PS1() {
+	PS1=${BASE_PS1}
 }
 
 add_path() {	
