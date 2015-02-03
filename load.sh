@@ -19,7 +19,8 @@ mode_chk() {
 	if [ ! -z "$CURRENT_SHELL_MODE" ]; then
 		is_in_mode
 		if [ $? -eq 0 ]; then
-			if [ -e $MODE_ITEM ] ; then
+			find_item $MODE_ITEM
+			if [ $? -eq 0 ] ; then
 				mode_git_PS1
 			else
 				umode_git_PS1
@@ -32,9 +33,10 @@ mode_chk() {
 	fi
 	
 	# No new mode is required
-	find_base || return
+	find_item $BASE_ITEM || return
 	
 	# Load mode variables
+	BASE_ITEM_PATH=$ITEM_PATH
 	source $BASE_ITEM_PATH
 	
 	export CURRENT_SHELL_MODE=$SHELL_MODE
@@ -79,16 +81,18 @@ add_paths() {
 	done
 }
 
-find_base() {
+find_item() {
+	local ITEM=$1
+	
 	local CUR_BASE=$PWD
 	local CONT=1
 
-	while [[ ! -z "$CUR_BASE" && ! -e $CUR_BASE/$BASE_ITEM ]]; do
+	while [[ ! -z "$CUR_BASE" && ! -e $CUR_BASE/$ITEM ]]; do
 		local CUR_BASE=${CUR_BASE%/*}
 	done
 
 	[ -z "$CUR_BASE" ] && return 1
-	BASE_ITEM_PATH=$CUR_BASE/$BASE_ITEM
+	ITEM_PATH=$CUR_BASE/$ITEM
 	return 0
 }
 
