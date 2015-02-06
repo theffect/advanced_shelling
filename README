@@ -4,8 +4,11 @@ Once running 'source load.sh' this advanced shelling goodies are ready to go.
 Put the 'base' file where you want to change modes automatically (you can hide it as '.base' and change the config in the load.sh).
 
 Installation:
+
+```bash
 cd advanced_shelling/
 sudo make install
+```
 
 edit the file /etc/advanced_shelling/config.inc
 change BASE_ITEM=base to your filename requirements
@@ -14,6 +17,7 @@ for example, the use of BASE_ITME=.base will hide every base file.
 
 Example Use:
 
+```bash
 devops@localhost:~$ source /usr/sbin/advanced_shelling/load.sh 
 devops@localhost:~$ cd workspace/
 devops@localhost:~/workspace$ mkdir project
@@ -45,3 +49,4 @@ devops@localhost:/project$ cd ..
 Restoring prompt
 Removing paths
 devops@localhost:~/workspace$
+```
