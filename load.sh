@@ -56,8 +56,9 @@ mode_chk() {
 }
 	
 load_assitant() {
-	[ ! -e $ASSISTANTS_DIR/bash_assist_$1 ] && return 1
-	source $ASSISTANTS_DIR/bash_assist_$1
+	local ASSISTANT=$ASSISTANTS_DIR/$1.inc
+	[ ! -e $ASSISTANT ] && return 1
+	source $ASSISTANT
 }
 
 mode_git_PS1() {
