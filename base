@@ -1,6 +1,0 @@
-
-SHELL_MODE=cloud_dev
-
-MODE_PATH[0]="dev_scripts"
-MODE_PATH[1]="bin"
-MODE_ITEM=".git"

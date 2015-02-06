@@ -1,9 +1,10 @@
 
 
-source config.inc
+source /etc/advanced_shelling/config.inc
+source /usr/sbin/advanced_shelling/installation.inc
 
 #BASE_ITEM
-[ ! -e "$ASSISTANTS_DIR" ] && echo -e "Asistants scripts directory doesn't exist in path given.\n""Please check ASSISTANTS_DIR value." && exit
+[ ! -e "$ASSISTANTS_DIR" ] && echo -e "Asistants scripts directory doesn't exist in path given.\n""Please check ASSISTANTS_DIR value." && return 1
 
 Red="\[\e[1;31m\]"
 Yellow="\[\e[1;33m\]"
@@ -54,7 +55,11 @@ mode_chk() {
 	load_assitant git
 	[ -e $MODE_ITEM ] && mode_git_PS1
 }
-	
+
+mode_make() {
+	cp $INSTALL_DIR/$BASE_ITEM.sample ./$BASE_ITEM
+}
+
 load_assitant() {
 	local ASSISTANT=$ASSISTANTS_DIR/$1.inc
 	[ ! -e $ASSISTANT ] && return 1
