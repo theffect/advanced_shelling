@@ -10,6 +10,13 @@ cd advanced_shelling/
 sudo make install
 ```
 
+Add the following to you ~/.bashrc file for loading 'advanced_shelling' on every login shell.
+```bash
+if [ -f /usr/sbin/advanced_shelling/load.sh ]; then
+        source /usr/sbin/advanced_shelling/load.sh
+fi
+```
+
 edit the file /etc/advanced_shelling/config.inc
 change BASE_ITEM=base to your filename requirements
 
