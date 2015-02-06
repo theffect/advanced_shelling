@@ -1,7 +1,4 @@
 
-Once running 'source load.sh' this advanced shelling goodies are ready to go.
-
-Put the 'base' file where you want to change modes automatically (you can hide it as '.base' and change the config in the load.sh).
 
 Installation:
 
@@ -21,6 +18,10 @@ edit the file /etc/advanced_shelling/config.inc
 change BASE_ITEM=base to your filename requirements
 
 for example, the use of BASE_ITME=.base will hide every base file.
+
+Use 'mode_make' for automatically creating a 'base' file in the current directory.
+
+A complete example for below.
 
 Example Use:
 
@@ -57,3 +58,10 @@ Restoring prompt
 Removing paths
 devops@localhost:~/workspace$
 ```
+
+
+Trying before installation:
+
+Modify the load.sh, config.inc, installation.inc for the correct path of you current directory for 'advanced_shelling'.
+Running 'source load.sh' will load advanced shelling goodies and you are ready to go.
+
