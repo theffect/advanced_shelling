@@ -49,7 +49,17 @@ mode_chk() {
 	
 	add_paths
 	
-	export PS1='\u@\h:'$Yellow'${PWD#$BACK_PATH}'$COff$PS1_END
+	if [ $VAR_LENGTH_LINE -eq 1 ]; then
+		PS1='\u@\h:\w'$PS1_END
+		LINE0=\#$Yellow'${PWD#$BACK_PATH}'$COff
+		LINE1=$PS1$PS1_END
+		PS1=$LINE0'\n'$LINE1
+	else
+		PS1='\u@\h:'
+		PS1=${PS1}$Yellow'${PWD#$BACK_PATH}'$COff$PS1_END
+	fi
+	
+	export PS1
 	export BASE_PS1=$PS1
 
 	load_assitant git
@@ -68,7 +78,12 @@ load_assitant() {
 
 mode_git_PS1() {
 	local GIT_REPO_NAME="$Blue$(git_repo_name)$COff"
-	PS1=${BASE_PS1%$PS1_END}'-'$GIT_REPO_NAME'-'$Red'$(git_unpushed_commits_number)$(git_is_uncommited_changes)'$COff$PS1_END
+	GIT_PS1='-'$GIT_REPO_NAME'-'$Red'$(git_unpushed_commits_number)$(git_is_uncommited_changes)'$COff
+	if [ $VAR_LENGTH_LINE -eq 1 ]; then
+		PS1=$LINE0$GIT_PS1'\n'$LINE1
+	else
+		PS1=${BASE_PS1%$PS1_END}$GIT_PS1$PS1_END
+	fi
 }
 
 umode_git_PS1() {
