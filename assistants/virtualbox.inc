@@ -6,7 +6,7 @@ vb_snapshot_to_() {
     target_path=$2
     format=$3
 
-    vboxmanage clonehd $snapshot_uuid $target_path/current.raw -format $format
+    vboxmanage clonehd $snapshot_uuid $target_path -format $format
 }
 
 vb_to_raw() {
