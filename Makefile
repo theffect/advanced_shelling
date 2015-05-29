@@ -13,6 +13,9 @@ install:
 	[ ! -e $(config_dir) ] && return 1 || return 0
 	cp $(install_dir)/config.inc.sample $(config_dir)/config.inc
 	
+	./Makefile_bashrc.sh install
+	
 
 uninstall:
 	rm -Rf $(install_dir)
+	./Makefile_bashrc.sh uninstall
