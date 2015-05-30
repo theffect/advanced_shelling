@@ -78,7 +78,7 @@ load_assitant() {
 
 mode_git_PS1() {
 	local GIT_REPO_NAME="$Blue$(git_repo_name)$COff"
-	GIT_PS1='-'$GIT_REPO_NAME'-'$Red'$(git_unpushed_commits_number)$(git_is_uncommited_changes)'$COff
+	GIT_PS1='-'$GIT_REPO_NAME'-$(git_branch_name)-'$Red'$(git_unpushed_commits_number)$(git_is_uncommited_changes)'$COff
 	if [ $VAR_LENGTH_LINE -eq 1 ]; then
 		PS1=$LINE0$GIT_PS1'\n'$LINE1
 	else

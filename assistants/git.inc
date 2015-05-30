@@ -31,6 +31,10 @@ git_current_branch() {
 	git rev-parse --abbrev-ref HEAD
 }
 
+git_branch_name() {
+	git_current_branch
+}
+
 git_unpushed_commits_number() {
 	NUMBER=$(git rev-list @{upstream}..HEAD --count 2>/dev/null)
 	[ "$NUMBER" != "0" ] && echo $NUMBER
