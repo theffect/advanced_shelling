@@ -20,20 +20,12 @@ mode_chk() {
 	if [ ! -z "$CURRENT_SHELL_MODE" ]; then
 		is_in_dir
 		if [ $? -eq 0 ]; then
-			find_item $MODE_ITEM
-			if [ $? -eq 0 ] ; then
-				as_check_assistant git
-				[ $? -ne 0 ] && load_assistant git
-
-				mode_git_PS1
-			else
-				umode_git_PS1
-			fi
+			sub_mode_chk
 		else
 			mode_exit
 		fi
 		
-		return
+		return 0
 	fi
 
 	mode_setup
@@ -70,12 +62,29 @@ mode_setup() {
 	export PS1
 	export BASE_PS1=$PS1
 
-	load_assistant git
-	[ -e $MODE_ITEM ] && mode_git_PS1
+	sub_mode_chk
 }
 
 mode_make() {
 	cp $INSTALL_DIR/$BASE_ITEM.sample ./$BASE_ITEM
+}
+
+sub_mode_chk() {
+	[ ! -e $MODE_ITEM ] && return 1
+
+	find_item $MODE_ITEM
+	sub_mode_chk_git
+}
+
+sub_mode_chk_git() {
+	if [ $? -eq 0 ] ; then
+		as_check_assistant git
+		[ $? -ne 0 ] && load_assistant git
+
+		mode_git_PS1
+	else
+		umode_git_PS1
+	fi
 }
 
 as_check_assistant() {
