@@ -23,7 +23,7 @@ mode_chk() {
 			find_item $MODE_ITEM
 			if [ $? -eq 0 ] ; then
 				as_check_assistant git
-				[ $? -ne 0 ] && load_assitant git
+				[ $? -ne 0 ] && load_assistant git
 
 				mode_git_PS1
 			else
@@ -65,7 +65,7 @@ mode_chk() {
 	export PS1
 	export BASE_PS1=$PS1
 
-	load_assitant git
+	load_assistant git
 	[ -e $MODE_ITEM ] && mode_git_PS1
 }
 
@@ -78,7 +78,7 @@ as_check_assistant() {
 	return $?
 }
 
-load_assitant() {
+load_assistant() {
 	local ASSISTANT=$ASSISTANTS_DIR/$1.inc
 	[ ! -e $ASSISTANT ] && return 1
 	source $ASSISTANT
