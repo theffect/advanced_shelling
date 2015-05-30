@@ -18,7 +18,7 @@ mode_chk() {
 	
 	# Already in a mode
 	if [ ! -z "$CURRENT_SHELL_MODE" ]; then
-		is_in_mode
+		is_in_dir
 		if [ $? -eq 0 ]; then
 			find_item $MODE_ITEM
 			if [ $? -eq 0 ] ; then
@@ -145,7 +145,7 @@ compare_path() {
 	return 1
 }
 
-is_in_mode() {
+is_in_dir() {
 	compare_path
 	return $?
 }
