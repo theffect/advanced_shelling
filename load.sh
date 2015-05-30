@@ -22,6 +22,9 @@ mode_chk() {
 		if [ $? -eq 0 ]; then
 			find_item $MODE_ITEM
 			if [ $? -eq 0 ] ; then
+				as_check_assistant git
+				[ $? -ne 0 ] && load_assitant git
+
 				mode_git_PS1
 			else
 				umode_git_PS1
@@ -70,10 +73,18 @@ mode_make() {
 	cp $INSTALL_DIR/$BASE_ITEM.sample ./$BASE_ITEM
 }
 
+as_check_assistant() {
+	as_assistant_$1 2> /dev/null
+	return $?
+}
+
 load_assitant() {
 	local ASSISTANT=$ASSISTANTS_DIR/$1.inc
 	[ ! -e $ASSISTANT ] && return 1
 	source $ASSISTANT
+	
+	# A flag like for assistant
+	eval "as_assistant_$1 () { return 0; };"
 }
 
 mode_git_PS1() {
