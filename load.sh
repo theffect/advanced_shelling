@@ -35,7 +35,12 @@ mode_chk() {
 		
 		return
 	fi
-	
+
+	mode_setup
+}
+
+# Set the AS mode up
+mode_setup() {	
 	# No new mode is required
 	find_item $BASE_ITEM || return
 	
