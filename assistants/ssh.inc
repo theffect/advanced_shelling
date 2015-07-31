@@ -1,7 +1,6 @@
 
 [ -z "$(which ssh)" ] 		&& return 1
 [ -z "$(which ssh-keygen)" ] 	&& return 2
-[ -z "$(which ssh-copy-id)" ] 	&& return 3
 
 # Easy ssh connection with no password
 addcouple() {
@@ -9,13 +8,14 @@ addcouple() {
 	ssh-copy-id -i
 }
 
+[ -z "$(which ssh-copy-id)" ] 	&& \
 ssh_copy_id() {
 	cat ~/.ssh/id_rsa.pub | ssh $1 <<< EOF
 	chmod 750 .;
 	[ ! -d ~/.ssh ] && mkdir ~/.ssh && touch ~/.ssh/authorized_keys;
 	chmod 750 ~/.ssh;
 	chmod 600 ~/.ssh/authorized_keys;
-	cat >> .ssh/authorized_keys'
+	cat >> .ssh/authorized_keys;
 EOF
 }
 
