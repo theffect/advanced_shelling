@@ -62,9 +62,14 @@ git_repo_name() {
 	echo $REMOTE_REPO_NAME
 }
 
+git_recursive_status() {
+	find ./ -name .git -printf "%h\n" -execdir git status --short \;
+}
+
 alias gil='git_log'
 alias gib='git_branch'
 alias gis='git_status'
+alias girs='git_recursive_status'
 alias gia='git add'
 alias gic='git commit'
 
