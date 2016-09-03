@@ -1,5 +1,6 @@
 
 SHELL_MODE=base_dev
+TITLE=Development
 
 MODE_PATH[0]="sbin"
 MODE_PATH[1]="bin"

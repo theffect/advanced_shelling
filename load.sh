@@ -12,6 +12,11 @@ Blue="\[\e[1;34m\]"
 Pink="\[\e[1;35m\]"
 COff="\[\e[m\]"
 
+# Title
+TOn="\033]2;"
+TOff="\007"
+
+
 PS1_END='$ '
 
 mode_chk() {
@@ -48,14 +53,15 @@ mode_setup() {
 	export BACK_PATH=${BASE_PATH%/*}
 	
 	add_paths
+	PS1_TITLE=${TOn}$TITLE$TOff
 	
 	if [ $VAR_LENGTH_LINE -eq 1 ]; then
-		PS1='\[\e]0;  \a\]\u@\h:\w'$PS2_END
+		#PS1='\[\e]0;  \a\]\u@\h:\w'$PS2_END
 		LINE0=\#$Yellow'${PWD#$BACK_PATH}'$COff
 		LINE1=$PS1$PS1_END
-		PS1=$LINE0'\n'$LINE1
+		PS1=$PS1_TITLE$LINE0'\n'$LINE1
 	else
-		PS1='\u@\h:'
+		PS1=$PS1_TITLE'\u@\h:'
 		PS1=${PS1}$Yellow'${PWD#$BACK_PATH}'$COff$PS1_END
 	fi
 	
@@ -105,9 +111,9 @@ mode_git_PS1() {
 	local GIT_REPO_NAME="$Blue$(git_repo_name)$COff"
 	GIT_PS1='-'$GIT_REPO_NAME'-$(git_branch_name)-'$Red'$(git_unpushed_commits_number)$(git_is_uncommited_changes)'$COff
 	if [ $VAR_LENGTH_LINE -eq 1 ]; then
-		PS1=$LINE0$GIT_PS1'\n'$LINE1
+		PS1=$PS1_TITLE$LINE0$GIT_PS1'\n'$LINE1
 	else
-		PS1=${BASE_PS1%$PS1_END}$GIT_PS1$PS1_END
+		PS1=$PS1_TITLE${BASE_PS1%$PS1_END}$GIT_PS1$PS1_END
 	fi
 }
 
@@ -179,6 +185,14 @@ mode_exit() {
 	unset BACK_PATH
 	
 	return 0
+}
+
+title() {
+    echo -en "\033]2;$1\007"
+}
+
+icon_label() {
+    echo -en "\033]1;$1\007"
 }
 
 export PROMPT_COMMAND="mode_chk"
