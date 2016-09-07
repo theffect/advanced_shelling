@@ -13,6 +13,10 @@ git_log() {
 	git log --graph --decorate --all --pretty="format:%C(3)%h %C(2)%an %Creset%s %C(auto)%d"
 }
 
+git_log_extended() {
+	git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all
+}
+
 git_log_alt() {
 	git log --branches --not --remotes --simplify-by-decoration --decorate --oneline
 }
@@ -67,6 +71,7 @@ git_recursive_status() {
 }
 
 alias gil='git_log'
+alias gill='git_log_extended'
 alias gib='git_branch'
 alias gis='git_status'
 alias girs='git_recursive_status'
