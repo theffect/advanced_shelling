@@ -58,11 +58,13 @@ mode_setup() {
 	if [ $VAR_LENGTH_LINE -eq 1 ]; then
 		#PS1='\[\e]0;  \a\]\u@\h:\w'$PS2_END
 		LINE0=\#$Yellow'${PWD#$BACK_PATH}'$COff
-		LINE1=$PS1$PS1_END
+		LINE1=$PS1
+		#PS1=$PS1_TITLE$LINE0'\n'$LINE1$PS1_END
 		PS1=$PS1_TITLE$LINE0'\n'$LINE1
 	else
 		PS1=$PS1_TITLE'\u@\h:'
-		PS1=${PS1}$Yellow'${PWD#$BACK_PATH}'$COff$PS1_END
+		#PS1=${PS1}$Yellow'${PWD#$BACK_PATH}'$COff$PS1_END
+		PS1=${PS1}$Yellow'${PWD#$BACK_PATH}'$COff
 	fi
 	
 	export PS1
