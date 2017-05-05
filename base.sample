@@ -4,4 +4,4 @@ TITLE=Development
 
 MODE_PATH[0]="sbin"
 MODE_PATH[1]="bin"
-MODE_ITEM=".git"
+MODE_GIT_ITEM=".git"
