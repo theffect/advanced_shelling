@@ -86,14 +86,24 @@ sub_mode_chk() {
 }
 
 sub_mode_chk_git() {
-	if [ $? -eq 0 ] ; then
-		as_check_assistant git
-		[ $? -ne 0 ] && load_assistant git
-
-		mode_git_PS1
-	else
-		umode_git_PS1
-	fi
+  
+  RET=$?
+  
+  if [ $RET -eq 0 ] ; then
+    
+    as_check_assistant git
+    [ $? -ne 0 ] && load_assistant git
+    
+    [ $RET -eq 0 ] && mode_git_PS1
+    [ $RET -ne 0 ] && umode_git_PS1
+    
+  else
+    
+    git rev-parse --git-dir &> /dev/null
+    [ $? -ne 0 ] && umode_git_PS1
+    
+  fi
+  
 }
 
 as_check_assistant() {
