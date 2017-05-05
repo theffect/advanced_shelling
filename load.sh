@@ -78,10 +78,11 @@ mode_make() {
 }
 
 sub_mode_chk() {
-	[ ! -e $MODE_ITEM ] && return 1
 
-	find_item $MODE_ITEM
-	sub_mode_chk_git
+  find_item $MODE_GIT_ITEM
+  sub_mode_chk_git
+  #[ ! -e $MODE_GIT_ITEM ] && return 1
+  return 0
 }
 
 sub_mode_chk_git() {
