@@ -5,3 +5,11 @@ TITLE=Development
 MODE_PATH[0]="sbin"
 MODE_PATH[1]="bin"
 MODE_GIT_ITEM=".git"
+
+setup() {
+  echo "Setup"
+}
+
+teardown() {
+  echo "Teardown"
+}
