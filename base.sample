@@ -7,9 +7,11 @@ MODE_PATH[1]="bin"
 MODE_GIT_ITEM=".git"
 
 setup() {
-  echo "Setup"
+  echo "Advanced Shelling template setup function"
+  return 0
 }
 
 teardown() {
-  echo "Teardown"
+  echo "Advanced Shelling template teardown function"
+  return 0
 }
