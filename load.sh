@@ -4,7 +4,10 @@ source /etc/advanced_shelling/config.inc
 source /usr/sbin/advanced_shelling/installation.inc
 
 #BASE_ITEM
-[ ! -e "$ASSISTANTS_DIR" ] && echo -e "Asistants scripts directory doesn't exist in path given.\n""Please check ASSISTANTS_DIR value." && return 1
+[ ! -e "$ASSISTANTS_DIR" ] && \
+  echo -e "Asistants scripts directory doesn't exist in path given.\n"\
+  "Please check ASSISTANTS_DIR value." && \
+  return 1
 
 Red="\[\e[1;31m\]"
 Yellow="\[\e[1;33m\]"
