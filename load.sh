@@ -56,8 +56,11 @@ mode_setup() {
   source $BASE_ITEM_PATH
   
   # User setup function
-  setup
-  unset -f setup
+  if [ "$(type -t setup)" == "function" ]; then
+    setup
+    unset -f setup
+  fi
+  
   unset -f teardown
   
   CURRENT_SHELL_MODE=$SHELL_MODE
@@ -214,9 +217,12 @@ mode_exit() {
   
   # User teardown function
   source $BASE_ITEM_PATH
-  teardown
+  if [ "$(type -t teardown)" == "function" ]; then
+    teardown
+    unset -f teardown
+  fi
+  
   unset -f setup
-  unset -f teardown
   
   return 0
 }
