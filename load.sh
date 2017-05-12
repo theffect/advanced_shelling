@@ -58,10 +58,8 @@ mode_setup() {
   # User setup function
   if [ "$(type -t setup)" == "function" ]; then
     setup
-    unset -f setup
   fi
   
-  unset -f teardown
   
   CURRENT_SHELL_MODE=$SHELL_MODE
   export OLD_PS1=$PS1
@@ -71,6 +69,7 @@ mode_setup() {
   export BACK_PATH=${BASE_PATH%/*}
   
   add_paths
+  
   PS1_TITLE=${TOn}$TITLE$TOff
   
   if [ $VAR_LENGTH_LINE -eq 1 ]; then
@@ -89,6 +88,7 @@ mode_setup() {
   export BASE_PS1=$PS1
 
   sub_mode_chk
+
 }
 
 mode_make() {
@@ -153,8 +153,12 @@ umode_git_PS1() {
 }
 
 add_path() {  
+  
   local ADD_PATH=$1
-  [[ ! $PATH =~ $ADD_PATH ]] && echo Adding $ADD_PATH to PATH && export PATH=$ADD_PATH:$PATH
+  [[ ! $PATH =~ $ADD_PATH ]] && \
+    echo Adding $ADD_PATH to PATH && \
+    PATH=$ADD_PATH:$PATH
+
 }
 
 add_paths() {
@@ -162,6 +166,7 @@ add_paths() {
     local ADD_PATH=$BASE_PATH/$CUR_PATH
     add_path "$ADD_PATH"
   done
+  
 }
 
 find_item() {
@@ -219,13 +224,22 @@ mode_exit() {
   source $BASE_ITEM_PATH
   if [ "$(type -t teardown)" == "function" ]; then
     teardown
-    unset -f teardown
   fi
-  
-  unset -f setup
+
+  unset-variables
   
   return 0
 }
+
+unset-variables() {
+  unset SHELL_MODE
+  unset TITLE
+  unset MODE_PATH
+  unset MODE_GIT_ITEM
+  unset -f setup
+  unset -f teardown
+}
+
 
 title() {
     echo -en "\033]2;$1\007"
