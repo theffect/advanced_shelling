@@ -32,67 +32,127 @@ mode_chk() {
     if [ $? -eq 0 ]; then
     
       sub_mode_chk
-      [ $? -ne 0 ] && mode_exit
+      [ $? -ne 0 ] && can mode teardown
     
     else
     
-      mode_exit
+      can mode teardown
     
     fi
     
     return 0
   fi
 
-  mode_setup
+  can mode setup
 }
 
-# Set the AS mode up
-mode_setup() {  
-  # No new mode is required
-  find_item $BASE_ITEM || return
+can() {
   
-  # Load mode variables
-  BASE_ITEM_PATH=$ITEM_PATH
-  source $BASE_ITEM_PATH
-  
-  # User setup function
-  if [ "$(type -t setup)" == "function" ]; then
-    setup
-  fi
-  
-  
-  CURRENT_SHELL_MODE=$SHELL_MODE
-  export OLD_PS1=$PS1
-  export OLD_PATH=$PATH
-  
-  export BASE_PATH=${BASE_ITEM_PATH%/*}
-  export BACK_PATH=${BASE_PATH%/*}
-  
-  add_paths
-  
-  PS1_TITLE=${TOn}$TITLE$TOff
-  
-  if [ $VAR_LENGTH_LINE -eq 1 ]; then
-    #PS1='\[\e]0;  \a\]\u@\h:\w'$PS2_END
-    LINE0=\#$Yellow'${PWD#$BACK_PATH}'$COff
-    LINE1=$PS1
-    #PS1=$PS1_TITLE$LINE0'\n'$LINE1$PS1_END
-    PS1=$PS1_TITLE$LINE0'\n'$LINE1
-  else
-    PS1=$PS1_TITLE'\u@\h:'
-    #PS1=${PS1}$Yellow'${PWD#$BACK_PATH}'$COff$PS1_END
-    PS1=${PS1}$Yellow'${PWD#$BACK_PATH}'$COff
-  fi
-  
-  export PS1
-  export BASE_PS1=$PS1
+  mode() {
+    
+    make() {
+      cp $INSTALL_DIR/$BASE_ITEM.sample ./$BASE_ITEM
+      echo "Added \"base\" file to current directory"
+    }
+    
+    # Set the AS mode up
+    setup() {  
+      # No new mode is required
+      find_item $BASE_ITEM || return
+      
+      # Load mode variables
+      BASE_ITEM_PATH=$ITEM_PATH
+      source $BASE_ITEM_PATH
+      
+      # User setup function
+      if [ "$(type -t setup)" == "function" ]; then
+        setup
+      fi
+      
+      
+      CURRENT_SHELL_MODE=$SHELL_MODE
+      export OLD_PS1=$PS1
+      export OLD_PATH=$PATH
+      
+      export BASE_PATH=${BASE_ITEM_PATH%/*}
+      export BACK_PATH=${BASE_PATH%/*}
+      
+      add_paths
+      
+      PS1_TITLE=${TOn}$TITLE$TOff
+      
+      if [ $VAR_LENGTH_LINE -eq 1 ]; then
+        #PS1='\[\e]0;  \a\]\u@\h:\w'$PS2_END
+        LINE0=\#$Yellow'${PWD#$BACK_PATH}'$COff
+        LINE1=$PS1
+        #PS1=$PS1_TITLE$LINE0'\n'$LINE1$PS1_END
+        PS1=$PS1_TITLE$LINE0'\n'$LINE1
+      else
+        PS1=$PS1_TITLE'\u@\h:'
+        #PS1=${PS1}$Yellow'${PWD#$BACK_PATH}'$COff$PS1_END
+        PS1=${PS1}$Yellow'${PWD#$BACK_PATH}'$COff
+      fi
+      
+      export PS1
+      export BASE_PS1=$PS1
+    
+      sub_mode_chk
+    
+    }
 
-  sub_mode_chk
 
-}
+    teardown() {
+      CURRENT_SHELL_MODE=""
+    
+      echo "Restoring prompt"
+      export PS1=$OLD_PS1
+      unset OLD_PS1
+    
+      echo "Removing paths"
+      export PATH=$OLD_PATH
+      unset OLD_PATH
+      
+      unset BASE_PATH
+      unset BACK_PATH
+      
+      # User teardown function
+      source $BASE_ITEM_PATH
+      if [ "$(type -t teardown)" == "function" ]; then
+        teardown
+      fi
+    
+      unset-variables
+      
+      return 0
+    }
 
-mode_make() {
-  cp $INSTALL_DIR/$BASE_ITEM.sample ./$BASE_ITEM
+
+    $@
+  }
+  
+  assistant() {
+    
+    load() {
+      local ASSISTANT=$ASSISTANTS_DIR/$1.inc
+      
+      [ ! -e $ASSISTANT ] && return 1
+      source $ASSISTANT
+      
+      # A flag like for assistant
+      eval "as_assistant_$1 () { return 0; };"
+    }
+    
+    check() {
+      
+      as_assistant_$1 2> /dev/null
+      
+      return $?
+    }
+    
+    $@
+  }
+  
+  $@
 }
 
 sub_mode_chk() {
@@ -109,8 +169,8 @@ sub_mode_chk_git() {
   
   if [ $RET -eq 0 ] ; then
     
-    as_check_assistant git
-    [ $? -ne 0 ] && load_assistant git
+    can assistant check git
+    [ $? -ne 0 ] && can assistant load git
     
     [ $RET -eq 0 ] && mode_git_PS1
     [ $RET -ne 0 ] && umode_git_PS1
@@ -122,20 +182,6 @@ sub_mode_chk_git() {
     
   fi
   
-}
-
-as_check_assistant() {
-  as_assistant_$1 2> /dev/null
-  return $?
-}
-
-load_assistant() {
-  local ASSISTANT=$ASSISTANTS_DIR/$1.inc
-  [ ! -e $ASSISTANT ] && return 1
-  source $ASSISTANT
-  
-  # A flag like for assistant
-  eval "as_assistant_$1 () { return 0; };"
 }
 
 mode_git_PS1() {
@@ -206,31 +252,6 @@ is_in_dir() {
   return $?
 }
 
-mode_exit() {
-  CURRENT_SHELL_MODE=""
-
-  echo "Restoring prompt"
-  export PS1=$OLD_PS1
-  unset OLD_PS1
-
-  echo "Removing paths"
-  export PATH=$OLD_PATH
-  unset OLD_PATH
-  
-  unset BASE_PATH
-  unset BACK_PATH
-  
-  # User teardown function
-  source $BASE_ITEM_PATH
-  if [ "$(type -t teardown)" == "function" ]; then
-    teardown
-  fi
-
-  unset-variables
-  
-  return 0
-}
-
 unset-variables() {
   unset SHELL_MODE
   unset TITLE
@@ -248,5 +269,32 @@ title() {
 icon_label() {
     echo -en "\033]1;$1\007"
 }
+
+###### ( BASH Completion ######
+
+_can_complete() {
+  
+  local arg=$1
+  local cur prev list
+  
+  cur=${COMP_WORDS[COMP_CWORD]}
+  prev=${COMP_WORDS[COMP_CWORD-1]}
+  
+  #echo ${COMP_WORDS[@]}
+  FILTER="perl -0777ne"
+  
+  list="$(declare -f $arg)"
+  for NAME in ${COMP_WORDS[@]:0:$COMP_CWORD}; do
+    list="$(echo \"$list\" | $FILTER '$_ =~ /(?<funcname>'"$NAME"')\s*\(\)\s*\{(?<content>(?:\{.*\}|[^{])*?)\}/ms; print "$+{content}\n";')"
+  done
+  
+  list="$(echo \"$list\" | $FILTER 'my @m = ($_ =~ /(?<funcname>\w*?)\s*\(\)\s*(\{(?:(?>[^{}]+)|(?2))*?\})/msg); for (my $e; $e < $#m; $e = $e + 2) { print $m[$e]." " };')"
+  
+  COMPREPLY=($(compgen -W "$list" ${cur}))
+}
+
+###### ) BASH Completion ######
+
+complete -F _can_complete can
 
 export PROMPT_COMMAND="mode_chk"
