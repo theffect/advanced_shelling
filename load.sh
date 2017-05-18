@@ -51,8 +51,18 @@ can() {
   mode() {
     
     make() {
+      
+      # Adding to current directory the 'base' file,
+      #  marking the base directory to run the advanced shelling
+      #  mode.
       cp $INSTALL_DIR/$BASE_ITEM.sample ./$BASE_ITEM
-      echo "Added \"base\" file to current directory"
+      echo "Added \"$BASE_ITEM\" file to current directory"
+      
+      # Recommending to user to add ignore to base file
+      [ -d '.git' ] && \
+        echo "Please add \"$BASE_ITEM\" to .gitignore"
+        echo "echo \"$BASE_ITEM\" >> .gitignore"
+      
     }
     
     # Set the AS mode up
