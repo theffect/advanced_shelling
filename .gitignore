@@ -2,3 +2,6 @@
 config.inc
 test
 tmp
+base
+*.swp
+*.vimbackup
