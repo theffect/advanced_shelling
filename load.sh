@@ -72,7 +72,11 @@ can() {
       
       # Load mode variables
       BASE_ITEM_PATH=$ITEM_PATH
-      source $BASE_ITEM_PATH
+      if [ -f $BASE_ITEM_PATH ]; then
+        source $BASE_ITEM_PATH
+      else
+        return 0
+      fi
       
       # User setup function
       if [ "$(type -t setup)" == "function" ]; then
