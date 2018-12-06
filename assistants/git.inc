@@ -60,8 +60,10 @@ git_repo_name() {
   done
 
   # Cleaning
-  local REMOTE_REPO_NAME=${REMOTE_URL##*/}
+  local REMOTE_REPO_NAME=${REMOTE_URL}
+  REMOTE_REPO_NAME=${REMOTE_REPO_NAME%\/}
   REMOTE_REPO_NAME=${REMOTE_REPO_NAME%.git}
+  REMOTE_REPO_NAME=${REMOTE_REPO_NAME##*/}
 
   echo $REMOTE_REPO_NAME
 }
