@@ -32,18 +32,18 @@ mode_chk() {
     if [ $? -eq 0 ]; then
     
       sub_mode_chk
-      [ $? -ne 0 ] && can mode teardown
+      [ $? -ne 0 ] && can mode mode.teardown
     
     else
     
-      can mode teardown
+      can mode mode.teardown
     
     fi
     
     return 0
   fi
 
-  can mode setup
+  can mode mode.setup
 }
 
 can() {
@@ -66,7 +66,7 @@ can() {
     }
     
     # Set the AS mode up
-    setup() {  
+    mode.setup() {
       # No new mode is required
       find_item $BASE_ITEM || return
       
@@ -115,7 +115,7 @@ can() {
     }
 
 
-    teardown() {
+    mode.teardown() {
       CURRENT_SHELL_MODE=""
     
       echo "Restoring prompt"
@@ -271,8 +271,8 @@ unset-variables() {
   unset TITLE
   unset MODE_PATH
   unset MODE_GIT_ITEM
-  unset -f setup
-  unset -f teardown
+  unset -f mode.setup
+  unset -f mode.teardown
 }
 
 
