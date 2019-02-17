@@ -72,6 +72,36 @@ git_recursive_status() {
   find ./ -name .git -printf "%h\n" -execdir git status --short \;
 }
 
+git_prune_by_merged() {
+  (
+    set -e
+    git checkout master &> /dev/null
+
+    local LIST0=($(git branch --merged | grep -v '^* master$' | tr -d '\n'))
+    local LIST1=($(git branch --no-merged | grep -v '^* master$' | tr -d '\n'))
+
+    if [ ${#LIST0[@]} -ne 0 -o ${#LIST1[@]} -ne 0 ]; then
+      echo "git checkout master &> /dev/null"
+
+      if [ ${#LIST0[@]} -ne 0 ]; then
+        printf "git branch -d %s\n" "${LIST0[@]}"
+      fi
+
+      if [ ${#LIST1[@]} -ne 0 ]; then
+        printf "git branch -D %s\n" "${LIST1[@]}"
+      fi
+
+      echo "git checkout - &> /dev/null"
+    fi
+
+    git checkout - &> /dev/null
+  )
+}
+
+git_branch_find() {
+  git branch --all | grep $1
+}
+
 alias gil='git_log'
 alias gill='git_log_extended'
 alias gib='git_branch'
