@@ -13,8 +13,9 @@ git_log() {
   git log --graph --decorate --all --pretty="format:%C(bold blue)%h%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset) %C(auto)%d"
 }
 
-git_log_extended() {
-  git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset) %C(bold green)(%ar)%C(reset)' --all
+git_logx() {
+  #is_git_repo;  (( $? )) && return 1
+  git log --graph --abbrev-commit --decorate --all --pretty="format:%C(bold blue)%h%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset) %C(auto)%d %C(bold green)(%ar)%C(reset)"
 }
 
 git_log_alt() {
