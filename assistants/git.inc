@@ -73,6 +73,7 @@ git_recursive_status() {
 }
 
 git_prune_by_merged() {
+  echo "This is deprecated, use 'git_prune'"
   (
     set -e
     git checkout master &> /dev/null
@@ -95,6 +96,18 @@ git_prune_by_merged() {
     fi
 
     git checkout - &> /dev/null
+  )
+}
+
+git_prune() {
+  (
+    set -e
+
+    local LIST_GONE=($(git branch -vv | sed 's/^..//' | grep "gone]" | sed 's/ .*//'))
+
+    if [ ${#LIST_GONE[@]} -ne 0 ]; then
+      printf "git branch -D %s\n" "${LIST_GONE[@]}"
+    fi
   )
 }
 
