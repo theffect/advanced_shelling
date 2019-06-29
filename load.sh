@@ -44,13 +44,14 @@ mode_chk() {
   fi
 
   can mode mode.setup
+  unset mode #mode.setup mode.teardown
 }
 
 can() {
   
   mode() {
     
-    make() {
+    mode.make() {
       
       # Adding to current directory the 'base' file,
       #  marking the base directory to run the advanced shelling
@@ -142,6 +143,9 @@ can() {
 
 
     $@
+
+    unset -f mode.make \
+      mode.setup mode.teardown
   }
   
   assistant() {
