@@ -252,9 +252,11 @@ compare_path() {
   local CUR_PWD=$PWD/
   local CUR_BASE=$BASE_PATH/
 
-  while [ ! -z "$CUR_PWD" -a ! -z "$CUR_BASE" ]; do
+  while [ -n "$CUR_PWD" -a -n "$CUR_BASE" ]; do
       CUR_PWD=${CUR_PWD#*/}
       CUR_BASE=${CUR_BASE#*/}
+	  [ "${CUR_PWD%%/*}" != "${CUR_BASE%%/*}" ] &&
+	    break
       #echo -e "PWD=$CUR_PWD\nBASE=$CUR_BASE"
   done
 
