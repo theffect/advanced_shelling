@@ -24,6 +24,11 @@ git_log_alt() {
 
 git_branch() {
   #is_git_repo;  (( $? )) && return 1
+  git branch
+}
+
+git_branch_extend() {
+  #is_git_repo;  (( $? )) && return 1
   git branch -a -vv
 }
 
@@ -116,11 +121,19 @@ git_branch_find() {
   git branch --all | grep $1
 }
 
+git_alias_install() {
+  git config --global alias.co checkout
+  git config --global alias.sh stash
+}
+
 alias gil='git_log'
 alias gill='git_log_extended'
 alias gib='git_branch'
+alias gibb='git_branch_extend'
 alias gis='git_status'
 alias girs='git_recursive_status'
 alias gia='git add'
 alias gic='git commit'
-
+alias gicamend='git commit --amend --no-edit'
+alias gitsl='git stash list'
+alias gitsd='git stash list'
