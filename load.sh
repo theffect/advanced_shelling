@@ -45,7 +45,7 @@ mode_chk() {
 
   can mode mode.setup
   unset mode #mode.setup mode.teardown
-}
+} &> /dev/null
 
 can() {
   
@@ -317,4 +317,4 @@ _can_complete() {
 
 complete -F _can_complete can
 
-export PROMPT_COMMAND="mode_chk"
+export PROMPT_COMMAND="mode_chk &>/dev/null; (( \$? )) && unset PROMPT_COMMAND"
