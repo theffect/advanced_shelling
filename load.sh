@@ -248,15 +248,33 @@ find_item() {
   return 0
 }
 
+depth_check() {
+  local DEPTH_PWD=$1
+  local DEPTH_BASE=$2
+
+  DEPTH_PWD=${DEPTH_PWD//[^/]}
+  DEPTH_PWD=${#DEPTH_PWD}
+
+  DEPTH_BASE=${DEPTH_BASE//[^/]}
+  DEPTH_BASE=${#DEPTH_BASE}
+
+  if [ $DEPTH_PWD -eq $DEPTH_BASE ]; then
+    return 1
+  fi
+
+  return 0
+}
+
 compare_path() {
   local CUR_PWD=$PWD/
   local CUR_BASE=$BASE_PATH/
 
+  OUTSIDE=0
   while [ -n "$CUR_PWD" -a -n "$CUR_BASE" ]; do
       CUR_PWD=${CUR_PWD#*/}
       CUR_BASE=${CUR_BASE#*/}
 	  [ "${CUR_PWD%%/*}" != "${CUR_BASE%%/*}" ] &&
-	    break
+	    OUTSIDE=1 && break
       #echo -e "PWD=$CUR_PWD\nBASE=$CUR_BASE"
   done
 
