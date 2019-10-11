@@ -204,7 +204,7 @@ sub_mode_chk_git() {
 
 mode_git_PS1() {
   local GIT_REPO_NAME="$Blue$(git_repo_name)$COff"
-  GIT_PS1='-'$GIT_REPO_NAME'-$(git_branch_name)-'$Red'$(git_unpushed_commits_number)$(git_is_uncommited_changes)'$COff
+  GIT_PS1='-'$GIT_REPO_NAME'-$(git_branch_name 2>/dev/null)-'$Red'$(git_unpushed_commits_number)$(git_is_uncommited_changes 2>/dev/null)'$COff
   if [ $VAR_LENGTH_LINE -eq 1 ]; then
     PS1=$PS1_TITLE$LINE0$GIT_PS1'\n'$LINE1
   else
