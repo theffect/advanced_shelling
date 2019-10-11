@@ -32,18 +32,18 @@ mode_chk() {
     if [ $? -eq 0 ]; then
     
       sub_mode_chk
-      [ $? -ne 0 ] && can mode mode.teardown
+      [ $? -ne 0 ] && can mode teardown
     
     else
     
-      can mode mode.teardown
+      can mode teardown
     
     fi
     
     return 0
   fi
 
-  can mode mode.setup
+  can mode setup
   unset mode #mode.setup mode.teardown
 } &> /dev/null
 
@@ -142,7 +142,7 @@ can() {
     }
 
 
-    $@
+    mode.$@
 
     unset -f mode.make \
       mode.setup mode.teardown
