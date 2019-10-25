@@ -45,7 +45,9 @@ mode_chk() {
 
   can mode setup
   unset mode #mode.setup mode.teardown
-} &> /dev/null
+
+  return 0
+}
 
 can() {
   
@@ -204,7 +206,7 @@ sub_mode_chk_git() {
 
 mode_git_PS1() {
   local GIT_REPO_NAME="$Blue$(git_repo_name)$COff"
-  GIT_PS1='-'$GIT_REPO_NAME'-$(git_branch_name 2>/dev/null)-'$Red'$(git_unpushed_commits_number)$(git_is_uncommited_changes 2>/dev/null)'$COff
+  GIT_PS1='-'$GIT_REPO_NAME'-$(git_branch_name 2>/dev/null)-'$Red'$(git_unpushed_commits_number 2>/dev/null)$(git_is_uncommited_changes 2>/dev/null)'$COff
   if [ $VAR_LENGTH_LINE -eq 1 ]; then
     PS1=$PS1_TITLE$LINE0$GIT_PS1'\n'$LINE1
   else
@@ -335,4 +337,4 @@ _can_complete() {
 
 complete -F _can_complete can
 
-export PROMPT_COMMAND="mode_chk &>/dev/null; (( \$? )) && unset PROMPT_COMMAND"
+export PROMPT_COMMAND="mode_chk || unset PROMPT_COMMAND"
