@@ -4,7 +4,7 @@ TITLE=Development
 
 MODE_PATH[0]="sbin"
 MODE_PATH[1]="bin"
-MODE_GIT_ITEM=".git"
+MODE_ASSISTANTS="git{dir:.git,do:ps1} git-ops{dir:.git} gerrit{assistant:git}"
 
 setup() {
   echo "Advanced Shelling template setup function"
