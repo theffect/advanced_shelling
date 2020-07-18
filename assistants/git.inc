@@ -137,3 +137,7 @@ alias gic='git commit'
 alias gicamend='git commit --amend --no-edit'
 alias gitsl='git stash list'
 alias gitsd='git stash list'
+
+as_assistant_git() {
+  return $?
+}

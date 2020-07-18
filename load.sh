@@ -114,7 +114,6 @@ can() {
       export BASE_PS1=$PS1
     
       sub_mode_chk
-    
     }
 
 
@@ -153,69 +152,149 @@ can() {
   assistant() {
     
     load() {
-      local ASSISTANT=$ASSISTANTS_DIR/$1.inc
+      local ASSISTANT_PATH=$ASSISTANTS_DIR/$1.inc
       
-      [ ! -e $ASSISTANT ] && return 1
-      source $ASSISTANT
-      
-      # A flag like for assistant
-      eval "as_assistant_$1 () { return 0; };"
+      if [ ! -e $ASSISTANT_PATH ]; then
+        echo "error file $ASSISTANT_PATH"
+        return 1
+      fi
+
+      source $ASSISTANT_PATH
+      (( $? )) && echo "error source $1" && return 1
+
+      return 0
     }
     
-    check() {
+    init() {
       
-      as_assistant_$1 2> /dev/null
-      
+     if type -t as_assistant_$1 &> /dev/null; then
+       as_assistant_$1
+     fi
+
       return $?
     }
     
     $@
   }
   
+  load_assistants() {
+    local ENTRY
+
+    MODE_ASSISTANTS=${MODE_ASSISTANTS:-git\{dir:.git\}}
+
+    for ENTRY in ${MODE_ASSISTANTS[@]}; do
+      local ASSISTANT DEP
+
+      ASSISTANT=${ENTRY%%\{*}
+      DEPS=${ENTRY##*\{}
+      DEPS=${DEPS%%\}*}
+
+      local IFS=,
+      DEPS=(${DEPS})
+      for DEP in ${DEPS[@]}; do
+        DEP_KEY=${DEP%%:*}
+        DEP_VALUE=${DEP##*:}
+
+        #echo Assitant: ${ASSISTANT}
+        #echo Depends: ${DEP_KEY} ${DEP_VALUE}
+
+        local NAMEI=${ASSISTANT/-/_}_${DEP_KEY}
+        local NAME=ASSISTANT_${NAMEI}
+        [ -n "${!NAME}" ] && continue
+
+        if [ "${DEP_KEY}" == "dir" ]; then
+          local RET
+
+          find_item ${DEP_VALUE}
+          RET=$?
+          if [ $RET -eq 0 ]; then
+            can assistant load ${ASSISTANT}
+            (( $? )) && echo "error assistant load ${ASSISTANT}" && continue
+          else
+            echo "error directory find ${ASSISTANT}"
+          fi
+        elif [ "${DEP_KEY}" == "any" ]; then
+          can assistant load ${ASSISTANT}
+          (( $? )) && echo "error assistant load ${ASSISTANT}" && continue
+        fi
+
+        eval ${NAME}=1
+      done
+    done
+  }
+
+  init_assistants() {
+    local ENTRY
+
+    MODE_ASSISTANTS=${MODE_ASSISTANTS:-git\{dir:.git\}}
+
+    for ENTRY in ${MODE_ASSISTANTS[@]}; do
+      local ASSISTANT DEPS DEP_KEY DEP_VALUE RET
+
+      ASSISTANT=${ENTRY%%\{*}
+      DEPS=${ENTRY##*\{}
+      DEPS=${DEPS%%\}*}
+
+      local IFS=,
+      for DEP in ${DEPS[@]}; do
+        DEP_KEY=${DEP%%:*}
+        DEP_VALUE=${DEP##*:}
+
+        #echo Assitant: ${ASSISTANT}
+        #echo Depends: ${DEP_KEY} ${DEP_VALUE}
+
+        if [ "${DEP_KEY}" == "dir" ]; then
+          find_item ${DEP_VALUE}
+          RET=$?
+        elif [ "${DEP_KEY}" == "do" ]; then
+
+          if [ $RET -eq 0 ]; then
+            can assistant init ${ASSISTANT}
+            if [ "${DEP_VALUE}" == "ps1" ]; then
+              mode_${ASSISTANT/-/_}_ps1
+              if [ $? -ne 0 ]; then
+                echo "error assistant init ${ASSISTANT}"
+                umode_${ASSISTANT/-/_}_ps1
+              fi
+            fi
+          #else
+          #  umode_git_ps1
+          fi
+        fi
+      done
+    done
+  }
+
   $@
 }
 
 sub_mode_chk() {
-
-  find_item $MODE_GIT_ITEM
-  sub_mode_chk_git
-  #[ ! -e $MODE_GIT_ITEM ] && return 1
+  can load_assistants
+  can init_assistants
   return 0
 }
 
-sub_mode_chk_git() {
-  
-  RET=$?
-  
-  if [ $RET -eq 0 ] ; then
-    
-    can assistant check git
-    [ $? -ne 0 ] && can assistant load git
-    
-    [ $RET -eq 0 ] && mode_git_PS1
-    [ $RET -ne 0 ] && umode_git_PS1
-    
-  else
-    
-    git rev-parse --git-dir &> /dev/null
-    [ $? -ne 0 ] && umode_git_PS1
-    
+mode_git_ps1() {
+  local GIT_REPO_NAME
+  GIT_REPO_NAME=$(git_repo_name 2>/dev/null)
+  if [ -z "$GIT_REPO_NAME" ]; then
+    return 1
   fi
-  
-}
 
-mode_git_PS1() {
-  local GIT_REPO_NAME="$Blue$(git_repo_name)$COff"
+  GIT_REPO_NAME="$Blue$GIT_REPO_NAME$COff"
   GIT_PS1='-'$GIT_REPO_NAME'-$(git_branch_name 2>/dev/null)-'$Red'$(git_unpushed_commits_number 2>/dev/null)$(git_is_uncommited_changes 2>/dev/null)'$COff
   if [ $VAR_LENGTH_LINE -eq 1 ]; then
     PS1=$PS1_TITLE$LINE0$GIT_PS1'\n'$LINE1
   else
     PS1=$PS1_TITLE${BASE_PS1%$PS1_END}$GIT_PS1$PS1_END
   fi
+
+  return 0
 }
 
-umode_git_PS1() {
+umode_git_ps1() {
   PS1=${BASE_PS1}
+  return 0
 }
 
 add_path() {  
@@ -275,8 +354,8 @@ compare_path() {
   while [ -n "$CUR_PWD" -a -n "$CUR_BASE" ]; do
       CUR_PWD=${CUR_PWD#*/}
       CUR_BASE=${CUR_BASE#*/}
-	  [ "${CUR_PWD%%/*}" != "${CUR_BASE%%/*}" ] &&
-	    OUTSIDE=1 && break
+      [ "${CUR_PWD%%/*}" != "${CUR_BASE%%/*}" ] &&
+        OUTSIDE=1 && break
       #echo -e "PWD=$CUR_PWD\nBASE=$CUR_BASE"
   done
 
@@ -296,7 +375,6 @@ unset-variables() {
   unset SHELL_MODE
   unset TITLE
   unset MODE_PATH
-  unset MODE_GIT_ITEM
   unset -f mode.setup
   unset -f mode.teardown
 }
