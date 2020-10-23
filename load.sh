@@ -166,7 +166,6 @@ can() {
     }
     
     init() {
-      
      if type -t as_assistant_$1 &> /dev/null; then
        as_assistant_$1
      fi
@@ -282,7 +281,8 @@ mode_git_ps1() {
   fi
 
   GIT_REPO_NAME="$Blue$GIT_REPO_NAME$COff"
-  GIT_PS1='-'$GIT_REPO_NAME'-$(git_branch_name 2>/dev/null)-'$Red'$(git_unpushed_commits_number 2>/dev/null)$(git_is_uncommited_changes 2>/dev/null)'$COff
+  GIT_PS1='-'$GIT_REPO_NAME'-$(git_branch_name 2>/dev/null)-'$Red'$(git_unpushed_commits_number 2>/dev/null)$(git_is_uncommited_changes 2>/dev/null)$(git_stash_abbrev 2>/dev/null)'$COff
+
   if [ $VAR_LENGTH_LINE -eq 1 ]; then
     PS1=$PS1_TITLE$LINE0$GIT_PS1'\n'$LINE1
   else
