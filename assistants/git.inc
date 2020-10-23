@@ -74,6 +74,16 @@ git_repo_name() {
   echo $REMOTE_REPO_NAME
 }
 
+git_stash_check() {
+  [ -z "$(git stash list 2>/dev/null)" ]
+}
+
+git_stash_abbrev() {
+  if ! git_stash_check; then
+    echo S
+  fi
+}
+
 git_recursive_status() {
   find ./ -name .git -printf "%h\n" -execdir git status --short \;
 }
@@ -127,7 +137,7 @@ git_alias_install() {
 }
 
 alias gil='git_log'
-alias gill='git_log_extended'
+alias gill='git_logx'
 alias gib='git_branch'
 alias gibb='git_branch_extend'
 alias gis='git_status'
