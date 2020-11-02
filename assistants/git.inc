@@ -10,12 +10,16 @@ is_git_repo() {
 
 git_log() {
   #is_git_repo;  (( $? )) && return 1
-  git log --graph --decorate --all --pretty="format:%C(bold blue)%h%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset) %C(auto)%d"
+  git log --graph --decorate --pretty="format:%C(bold blue)%h%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset) %C(auto)%d" $@
 }
 
 git_logx() {
   #is_git_repo;  (( $? )) && return 1
-  git log --graph --abbrev-commit --decorate --all --pretty="format:%C(bold blue)%h%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset) %C(auto)%d %C(bold green)(%ar)%C(reset)"
+  git log --graph --abbrev-commit --decorate --pretty="format:%C(bold blue)%h%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset) %C(auto)%d %C(bold green)(%ar)%C(reset)" $@
+}
+
+git_logx_all() {
+  git_logx --all
 }
 
 git_log_alt() {
@@ -138,6 +142,7 @@ git_alias_install() {
 
 alias gil='git_log'
 alias gill='git_logx'
+alias gilll='git_logx_all'
 alias gib='git_branch'
 alias gibb='git_branch_extend'
 alias gis='git_status'
