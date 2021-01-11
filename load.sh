@@ -50,7 +50,7 @@ mode_setup() {
 	add_paths
 	
 	if [ $VAR_LENGTH_LINE -eq 1 ]; then
-		PS1='\u@\h:\w'$PS1_END
+		PS1='\[\e]0;  \a\]\u@\h:\w'$PS2_END
 		LINE0=\#$Yellow'${PWD#$BACK_PATH}'$COff
 		LINE1=$PS1$PS1_END
 		PS1=$LINE0'\n'$LINE1
