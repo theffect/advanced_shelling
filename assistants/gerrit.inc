@@ -3,8 +3,13 @@
 
 # Gerrit helpers
 
+#
+# Commit 'update' with 'push' to a pull-request for 'master'
+#  using the branch name as a topic
+#
 gerrit-commit-update() {
   local branch
+  local state="$1"; shift
 
   branch="$(git rev-parse --abbrev-ref HEAD)"
   if [ "$branch" == "master" ]; then
@@ -12,17 +17,26 @@ gerrit-commit-update() {
     return 1
   fi
 
-  if [ "$(git rev-parse master)" == $(git rev-parse HEAD) ]; then
+  if [ "$(git rev-parse master)" == "$(git rev-parse HEAD)" ]; then
     echo "Please add a new commit on to $branch" 1>&2
     return 1
   fi
 
+  case "$state" in
+    wip|ready) state="%$state" ;;
+	"") ;;
+	*)
+      echo "Use \"wip\" or \"ready\" to specifiy state of push" 1>&2
+	  return 1;;
+  esac
+
   git commit --amend --no-edit
-  git push origin $branch:refs/for/master -o topic="$branch"
+  git push origin $branch:refs/for/master$state -o topic="$branch"
 }
 
 gerrit-commit-push() {
   local branch
+  local state="$1"; shift
 
   branch="$(git rev-parse --abbrev-ref HEAD)"
   if [ "$branch" == "master" ]; then
@@ -30,7 +44,15 @@ gerrit-commit-push() {
     return 1
   fi
 
-  git push origin $branch:refs/for/master -o topic="$branch"
+  case "$state" in
+    wip|ready) state="%$state" ;;
+	"") ;;
+	*)
+      echo "Use \"wip\" or \"ready\" to specifiy state of push" 1>&2
+	  return 1;;
+  esac
+
+  git push origin $branch:refs/for/master$state -o topic="$branch"
 }
 
 gerrit-commit-merged() {
@@ -70,7 +92,7 @@ gerrit-cross-repo-commit-update() {
 }
 
 gcrcu() { gerrit-cross-repo-commit-update "$@"; }
-gcu() { gerrit-commit-update; }
-gcp() { gerrit-commit-push; }
-gcm() { gerrit-commit-merged; }
+gcu() { gerrit-commit-update "$@"; }
+gcp() { gerrit-commit-push "$@"; }
+gcm() { gerrit-commit-merged "$@"; }
 
