@@ -352,7 +352,7 @@ compare_path() {
 
   # Inside = True
   [ -z "$CUR_BASE" ] && return 0
-  
+
   # Outside = False
   return 1
 }
@@ -360,6 +360,17 @@ compare_path() {
 is_in_dir() {
   compare_path
   return $?
+}
+
+is_in_dir_alt() {
+  local CUR_PWD=$PWD/
+  local CUR_BASE=$BASE_PATH/
+
+  if [ "$CUR_PWD" != "${CUR_PWD##${CUR_BASE}}" ]; then
+    return 0
+  fi
+
+  return 1
 }
 
 unset-variables() {
