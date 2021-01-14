@@ -23,23 +23,16 @@ TOff="\007"
 PS1_END='$ '
 
 mode_chk() {
-  
+
   # Already in a mode
   if [ ! -z "$CURRENT_SHELL_MODE" ]; then
-    
-    is_in_dir
-    
-    if [ $? -eq 0 ]; then
-    
+    if is_in_dir; then
       sub_mode_chk
       [ $? -ne 0 ] && can mode teardown
-    
     else
-    
       can mode teardown
-    
     fi
-    
+
     return 0
   fi
 
@@ -230,6 +223,7 @@ can() {
     for ENTRY in ${MODE_ASSISTANTS[@]}; do
       local ASSISTANT DEPS DEP_KEY DEP_VALUE RET
 
+      RET=0
       ASSISTANT=${ENTRY%%\{*}
       DEPS=${ENTRY##*\{}
       DEPS=${DEPS%%\}*}
@@ -242,22 +236,20 @@ can() {
         #echo Assitant: ${ASSISTANT}
         #echo Depends: ${DEP_KEY} ${DEP_VALUE}
 
+        if [ $RET -ne 0 ]; then
+          break
+        fi
         if [ "${DEP_KEY}" == "dir" ]; then
           find_item ${DEP_VALUE}
           RET=$?
         elif [ "${DEP_KEY}" == "do" ]; then
-
-          if [ $RET -eq 0 ]; then
-            can assistant init ${ASSISTANT}
-            if [ "${DEP_VALUE}" == "ps1" ]; then
-              mode_${ASSISTANT/-/_}_ps1
-              if [ $? -ne 0 ]; then
-                echo "error assistant init ${ASSISTANT}"
-                umode_${ASSISTANT/-/_}_ps1
-              fi
+          can assistant init ${ASSISTANT}
+          if [ "${DEP_VALUE}" == "ps1" ]; then
+            mode_${ASSISTANT/-/_}_ps1
+            if [ $? -ne 0 ]; then
+              echo "error assistant init ${ASSISTANT}"
+              umode_${ASSISTANT/-/_}_ps1
             fi
-          #else
-          #  umode_git_ps1
           fi
         fi
       done
