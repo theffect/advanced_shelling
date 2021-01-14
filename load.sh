@@ -43,29 +43,29 @@ mode_chk() {
 }
 
 can() {
-  
+
   mode() {
-    
+
     mode.make() {
-      
+
       # Adding to current directory the 'base' file,
       #  marking the base directory to run the advanced shelling
       #  mode.
       cp $INSTALL_DIR/$BASE_ITEM.sample ./$BASE_ITEM
       echo "Added \"$BASE_ITEM\" file to current directory"
-      
+
       # Recommending to user to add ignore to base file
       [ -d '.git' ] && \
         echo "Please add \"$BASE_ITEM\" to .gitignore"
         echo "echo \"$BASE_ITEM\" >> .gitignore"
-      
+
     }
-    
+
     # Set the AS mode up
     mode.setup() {
       # No new mode is required
       find_item $BASE_ITEM || return
-      
+
       # Load mode variables
       BASE_ITEM_PATH=$ITEM_PATH
       if [ -f $BASE_ITEM_PATH ]; then
@@ -73,24 +73,23 @@ can() {
       else
         return 0
       fi
-      
+
       # User setup function
       if [ "$(type -t setup)" == "function" ]; then
         setup
       fi
-      
-      
+
       CURRENT_SHELL_MODE=$SHELL_MODE
       export OLD_PS1=$PS1
       export OLD_PATH=$PATH
-      
+
       export BASE_PATH=${BASE_ITEM_PATH%/*}
       export BACK_PATH=${BASE_PATH%/*}
-      
+
       add_paths
-      
+
       PS1_TITLE=${TOn}$TITLE$TOff
-      
+
       if [ $VAR_LENGTH_LINE -eq 1 ]; then
         #PS1='\[\e]0;  \a\]\u@\h:\w'$PS2_END
         LINE0=\#$Yellow'${PWD#$BACK_PATH}'$COff
@@ -102,36 +101,36 @@ can() {
         #PS1=${PS1}$Yellow'${PWD#$BACK_PATH}'$COff$PS1_END
         PS1=${PS1}$Yellow'${PWD#$BACK_PATH}'$COff
       fi
-      
+
       export PS1
       export BASE_PS1=$PS1
-    
+
       sub_mode_chk
     }
 
 
     mode.teardown() {
       CURRENT_SHELL_MODE=""
-    
+
       echo "Restoring prompt"
       export PS1=$OLD_PS1
       unset OLD_PS1
-    
+
       echo "Removing paths"
       export PATH=$OLD_PATH
       unset OLD_PATH
-      
+
       unset BASE_PATH
       unset BACK_PATH
-      
+
       # User teardown function
       source $BASE_ITEM_PATH
       if [ "$(type -t teardown)" == "function" ]; then
         teardown
       fi
-    
+
       unset-variables
-      
+
       return 0
     }
 
@@ -141,12 +140,12 @@ can() {
     unset -f mode.make \
       mode.setup mode.teardown
   }
-  
+
   assistant() {
-    
+
     load() {
       local ASSISTANT_PATH=$ASSISTANTS_DIR/$1.inc
-      
+
       if [ ! -e $ASSISTANT_PATH ]; then
         echo "error file $ASSISTANT_PATH"
         return 1
@@ -157,7 +156,7 @@ can() {
 
       return 0
     }
-    
+
     init() {
      if type -t as_assistant_$1 &> /dev/null; then
        as_assistant_$1
@@ -165,10 +164,10 @@ can() {
 
       return $?
     }
-    
+
     $@
   }
-  
+
   load_assistants() {
     local ENTRY
 
@@ -289,8 +288,8 @@ umode_git_ps1() {
   return 0
 }
 
-add_path() {  
-  
+add_path() {
+
   local ADD_PATH=$1
   [[ ! $PATH =~ $ADD_PATH ]] && \
     echo Adding $ADD_PATH to PATH && \
@@ -303,12 +302,12 @@ add_paths() {
     local ADD_PATH=$BASE_PATH/$CUR_PATH
     add_path "$ADD_PATH"
   done
-  
+
 }
 
 find_item() {
   local ITEM=$1
-  
+
   local CUR_BASE=$PWD
   local CONT=1
 
@@ -383,23 +382,23 @@ icon_label() {
 ###### ( BASH Completion ######
 
 _can_complete() {
-  
+
   local arg=$1
   local cur prev list
-  
+
   cur=${COMP_WORDS[COMP_CWORD]}
   prev=${COMP_WORDS[COMP_CWORD-1]}
-  
+
   #echo ${COMP_WORDS[@]}
   FILTER="perl -0777ne"
-  
+
   list="$(declare -f $arg)"
   for NAME in ${COMP_WORDS[@]:0:$COMP_CWORD}; do
     list="$(echo \"$list\" | $FILTER '$_ =~ /(?<funcname>'"$NAME"')\s*\(\)\s*\{(?<content>(?:\{.*\}|[^{])*?)\}/ms; print "$+{content}\n";')"
   done
-  
+
   list="$(echo \"$list\" | $FILTER 'my @m = ($_ =~ /(?<funcname>\w*?)\s*\(\)\s*(\{(?:(?>[^{}]+)|(?2))*?\})/msg); for (my $e; $e < $#m; $e = $e + 2) { print $m[$e]." " };')"
-  
+
   COMPREPLY=($(compgen -W "$list" ${cur}))
 }
 
