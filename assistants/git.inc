@@ -64,9 +64,12 @@ git_is_uncommited_changes() {
 
 git_repo_name() {
   local REMOTES=$(git remote -v)
+  local REMOTE_URL
   #readarray -t REMOTES <<< "$REMOTES"
   for REMOTE in "$REMOTES"; do
-    [[ "$REMOTE" =~ "(fetch)" ]] && local REMOTE_URL=${REMOTE%% (fetch)*}
+    if [[ "$REMOTE" =~ "(fetch)" ]]; then
+	  REMOTE_URL=${REMOTE%% (fetch)*}
+	fi
   done
 
   # Cleaning
