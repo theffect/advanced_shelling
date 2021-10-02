@@ -158,9 +158,9 @@ can() {
     }
 
     init() {
-     if type -t as_assistant_$1 &> /dev/null; then
-       as_assistant_$1
-     fi
+      if type -t as_assistant_$1 &> /dev/null; then
+        as_assistant_$1
+      fi
 
       return $?
     }
@@ -193,21 +193,24 @@ can() {
         local NAME=ASSISTANT_${NAMEI}
         [ -n "${!NAME}" ] && continue
 
-        if [ "${DEP_KEY}" == "dir" ]; then
-          local RET
+        case "${DEP_KEY}" in
+          dir)
+            local RET
 
-          find_item ${DEP_VALUE}
-          RET=$?
-          if [ $RET -eq 0 ]; then
+            find_item ${DEP_VALUE}
+            RET=$?
+            if [ $RET -eq 0 ]; then
+              can assistant load ${ASSISTANT}
+              (( $? )) && echo "error assistant load ${ASSISTANT}" && continue
+            #else
+            #  echo "error directory find ${ASSISTANT}"
+            fi
+          ;;
+          *)
             can assistant load ${ASSISTANT}
             (( $? )) && echo "error assistant load ${ASSISTANT}" && continue
-          else
-            echo "error directory find ${ASSISTANT}"
-          fi
-        elif [ "${DEP_KEY}" == "any" ]; then
-          can assistant load ${ASSISTANT}
-          (( $? )) && echo "error assistant load ${ASSISTANT}" && continue
-        fi
+          ;;
+        esac
 
         eval ${NAME}=1
       done
@@ -235,22 +238,36 @@ can() {
         #echo Assitant: ${ASSISTANT}
         #echo Depends: ${DEP_KEY} ${DEP_VALUE}
 
-        if [ $RET -ne 0 ]; then
-          break
-        fi
-        if [ "${DEP_KEY}" == "dir" ]; then
-          find_item ${DEP_VALUE}
-          RET=$?
-        elif [ "${DEP_KEY}" == "do" ]; then
-          can assistant init ${ASSISTANT}
-          if [ "${DEP_VALUE}" == "ps1" ]; then
-            mode_${ASSISTANT/-/_}_ps1
-            if [ $? -ne 0 ]; then
-              echo "error assistant init ${ASSISTANT}"
-              umode_${ASSISTANT/-/_}_ps1
+        local NAME=${ASSISTANT/-/_}_${DEP_VALUE}_state
+
+        case "${DEP_KEY}" in
+          dir)
+            find_item ${DEP_VALUE}
+            RET=$?
+          ;;
+          do)
+            # Did conditional failed in previous iteration
+            if [ $RET -ne 0 ] && [ -n "${!NAME}" ]; then
+              if type -t umode_${ASSISTANT/-/_}_${DEP_VALUE} &> /dev/null; then
+                umode_${ASSISTANT/-/_}_${DEP_VALUE}
+              fi
+              break
             fi
-          fi
-        fi
+
+            # Load assistant
+            can assistant init ${ASSISTANT}
+            if type -t mode_${ASSISTANT/-/_}_${DEP_VALUE} &> /dev/null; then
+              if ! mode_${ASSISTANT/-/_}_${DEP_VALUE}; then
+                echo "error assistant init ${ASSISTANT}"
+                if type -t umode_${ASSISTANT/-/_}_${DEP_VALUE} &> /dev/null; then
+                  umode_${ASSISTANT/-/_}_${DEP_VALUE}
+                fi
+              fi
+            fi
+
+            eval ${NAME}=1
+          ;;
+        esac
       done
     done
   }
@@ -268,7 +285,7 @@ mode_git_ps1() {
   local GIT_REPO_NAME
   GIT_REPO_NAME=$(git_repo_name 2>/dev/null)
   if [ -z "$GIT_REPO_NAME" ]; then
-    return 1
+    return 0
   fi
 
   GIT_REPO_NAME="$Blue$GIT_REPO_NAME$COff"
